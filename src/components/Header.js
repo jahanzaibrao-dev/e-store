@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import bootstrap from "bootstrap";
+import { authService } from "../services/auth.service";
 
 const Header = () => {
   return (
@@ -12,10 +13,18 @@ const Header = () => {
         <div>
           <ul className="navbar-nav ml-auto">
             <li className="nav-item">
-              <NavLink className="nav-link" to={"/cart"}>
-                <i className="fa fa-shopping-cart" aria-hidden="true"></i>
-                Cart
-              </NavLink>
+              {authService.isLoggedIn() ? (
+                <NavLink className="nav-link" to={"/cart"}>
+                  <i className="fa fa-shopping-cart" aria-hidden="true"></i>
+                  Cart
+                </NavLink>
+              ) : (
+                <div className="row">
+                  <NavLink className="nav-link" to={"/login"}>
+                    Login
+                  </NavLink>
+                </div>
+              )}
             </li>
           </ul>
         </div>
