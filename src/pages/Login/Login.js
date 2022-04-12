@@ -1,22 +1,47 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
-import "./login.scss";
+import React, { useEffect, useState } from 'react'
+import { Alert } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
+import { connect } from 'react-redux'
+import { authActions } from '../../actions/auth'
+import './login.scss'
 
 const Login = (props) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [validation, setValidation] = useState('true')
+  const loggedIn = useSelector((state) => state.authentication.loggedIn)
+
+  useEffect(() => {
+    props.dispatch(authActions.logout())
+  }, [])
 
   function handleChange(e) {
-    const { name, value } = e.target;
-    name === "email" ? setEmail(value) : setPassword(value);
+    const { name, value } = e.target
+    name === 'email' ? setEmail(value) : setPassword(value)
+    console.log(name, ': ', value)
   }
 
   function handleSubmit(e) {
-    e.preventDefault();
+    e.preventDefault()
+
+    const mail = email
+    const pass = password
+
+    const { dispatch } = props
+    if (mail && pass) {
+      console.log(loggedIn)
+      dispatch(authActions.login(mail, pass))
+      console.log(loggedIn)
+      if (!loggedIn) {
+        setValidation(false)
+      } else {
+        props.history.push('/')
+      }
+    }
   }
 
   return (
-    <section className="vh-100" style={{ paddingTop: "6rem" }}>
+    <section className="vh-100" style={{ paddingTop: '6rem' }}>
       <div className="px-4 py-5 px-md-5 text-center text-lg-start">
         <div className="container">
           <div className="row gx-lg-5 align-items-center">
@@ -35,7 +60,19 @@ const Login = (props) => {
                     className="img-fluid"
                     alt="Sample img"
                   />
-                  <form>
+                  {!validation ? (
+                    <Alert
+                      variant="danger"
+                      onClose={() => setValidation(true)}
+                      dismissible
+                    >
+                      <Alert.Heading>Auth failed!</Alert.Heading>
+                      <p>Invalid credentials</p>
+                    </Alert>
+                  ) : (
+                    ''
+                  )}
+                  <form onSubmit={handleSubmit}>
                     <div className="form-outline mb-4 mt-4">
                       <input
                         type="email"
@@ -69,17 +106,16 @@ const Login = (props) => {
                     <div className="text-center text-lg-start mt-4 pt-2">
                       <button
                         type="submit"
-                        onSubmit={handleSubmit}
                         className="btn btn-dark btn-lg"
                         style={{
-                          paddingLeft: "2.5rem",
-                          paddingRight: "2.5rem",
+                          paddingLeft: '2.5rem',
+                          paddingRight: '2.5rem'
                         }}
                       >
                         Login
                       </button>
                       <p className="small fw-bold mt-2 pt-1 mb-0">
-                        Don't have an account?{" "}
+                        Don't have an account?{' '}
                         <a href="/signup" className="link-danger">
                           Register
                         </a>
@@ -93,15 +129,15 @@ const Login = (props) => {
         </div>
       </div>
     </section>
-  );
-};
-
-function mapStateToProps(state) {
-  const { loggingIn } = state.authentication;
-  return {
-    loggingIn,
-  };
+  )
 }
 
-const connectedLoginPage = connect(mapStateToProps)(Login);
-export { connectedLoginPage as Login };
+function mapStateToProps(state) {
+  const { loggingIn } = state.authentication
+  return {
+    loggingIn
+  }
+}
+
+const connectedLoginPage = connect(mapStateToProps)(Login)
+export { connectedLoginPage as Login }

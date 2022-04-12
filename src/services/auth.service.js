@@ -1,7 +1,7 @@
 import axios from "axios";
 import { authUtils } from "../utils/auth.utils";
 
-const baseUrl = process.env.API_URl;
+const baseUrl = "http://localhost:8080/api";
 
 export const authService = {
   getAuthHeaders,
@@ -35,7 +35,7 @@ function logout() {
 }
 
 async function signup(user) {
-  axios.post(`${baseUrl}/user/signup`, user);
+  axios.post(`${baseUrl}/users/signup`, user);
 }
 
 async function login(email, password) {
@@ -46,7 +46,7 @@ async function login(email, password) {
     throw new Error("password is not present");
   }
   return axios
-    .post(`${baseUrl}/user/login`, { email, password })
+    .post(`${baseUrl}/users/login`, { email, password })
     .then((res) => {
       setAccessToken(res.data.token);
       setUser(res.data.user);
@@ -58,10 +58,11 @@ async function login(email, password) {
 }
 
 async function getAllUsers() {
-  return axios.get(`${baseUrl}/user`, getAuthHeaders());
+  return axios.get(`${baseUrl}/users`, getAuthHeaders());
 }
 
 function setAccessToken(token) {
+  console.log("token: ", token);
   localStorage.setItem("accessToken", token);
 }
 
@@ -70,7 +71,8 @@ function getAccessToken() {
 }
 
 function setUser(user) {
-  localStorage.setItem("accessToken", JSON.stringify(user));
+  console.log("token: ", user);
+  localStorage.setItem("user", JSON.stringify(user));
 }
 
 function getUser() {

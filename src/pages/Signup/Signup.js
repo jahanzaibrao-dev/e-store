@@ -1,7 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import "../Login/login.scss";
 
-const signup = () => {
+const Signup = (props) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    switch (name) {
+      case "name":
+        setName(value);
+        return;
+      case "email":
+        setEmail(value);
+        return;
+      case "password":
+        setPassword(value);
+        return;
+      case "phone":
+        setPhone(value);
+        return;
+      default:
+        return;
+    }
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+  }
+
   return (
     <section className="vh-100" style={{ paddingTop: "6rem" }}>
       <div className="px-4 py-5 px-md-5 text-center text-lg-start">
@@ -23,12 +52,14 @@ const signup = () => {
                     class="img-fluid"
                     alt="Sample img"
                   />
-                  <form>
+                  <form onSubmit={handleSubmit}>
                     <div className="form-outline mb-4 mt-4">
                       <input
                         type="text"
                         id="form3Example1"
                         className="form-control"
+                        name="name"
+                        value={name}
                       />
                       <label className="form-label" for="form3Example1">
                         Name
@@ -39,6 +70,8 @@ const signup = () => {
                         type="email"
                         id="form3Example2"
                         className="form-control"
+                        name="email"
+                        value={email}
                       />
                       <label className="form-label" for="form3Example2">
                         Email address
@@ -50,6 +83,8 @@ const signup = () => {
                         type="password"
                         id="form3Example3"
                         className="form-control"
+                        name="password"
+                        value={password}
                       />
                       <label className="form-label" for="form3Example3">
                         Password
@@ -58,9 +93,11 @@ const signup = () => {
 
                     <div className="form-outline mb-4">
                       <input
-                        type="password"
+                        type="text"
                         id="form3Example4"
                         className="form-control"
+                        name="phone"
+                        value={phone}
                       />
                       <label className="form-label" for="form3Example4">
                         Phone
@@ -84,4 +121,4 @@ const signup = () => {
   );
 };
 
-export default signup;
+export default Signup;

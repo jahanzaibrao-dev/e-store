@@ -1,9 +1,12 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import bootstrap from "bootstrap";
-import { authService } from "../services/auth.service";
+import React from 'react'
+import { Link, NavLink } from 'react-router-dom'
+import bootstrap from 'bootstrap'
+import { authService } from '../services/auth.service'
+import { useSelector } from 'react-redux'
 
-const Header = () => {
+const Header = (props) => {
+  const isLoggedIn = useSelector((state) => state.authentication.loggedIn)
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div className="container">
@@ -12,25 +15,33 @@ const Header = () => {
         </NavLink>
         <div>
           <ul className="navbar-nav ml-auto">
-            <li className="nav-item">
-              {authService.isLoggedIn() ? (
-                <NavLink className="nav-link" to={"/cart"}>
-                  <i className="fa fa-shopping-cart" aria-hidden="true"></i>
-                  Cart
-                </NavLink>
-              ) : (
-                <div className="row">
-                  <NavLink className="nav-link" to={"/login"}>
-                    Login
+            {isLoggedIn ? (
+              <>
+                <li className="nav-item">
+                  <NavLink className="nav-link" to={'/cart'}>
+                    <i className="fa fa-shopping-cart" aria-hidden="true"></i>
+                    Cart
                   </NavLink>
-                </div>
-              )}
-            </li>
+                </li>
+                <li>
+                  <Link className="nav-link" to={'/login'}>
+                    <i className="fa fa-shopping-cart" aria-hidden="true"></i>
+                    Logout
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <li className="nav-link">
+                <Link className="nav-link" to={'/login'}>
+                  Login
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
