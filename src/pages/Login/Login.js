@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useRef } from 'react'
 import { Alert } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { connect } from 'react-redux'
@@ -8,12 +9,28 @@ import './login.scss'
 const Login = (props) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [validation, setValidation] = useState('true')
+  const [validation, setValidation] = useState(true)
+  const [submitted, setSubmitted] = useState(false)
+  const isMounted = useRef(false)
   const loggedIn = useSelector((state) => state.authentication.loggedIn)
+  const error = useSelector((state) => state.authentication.error)
+  const loggingIn = useSelector((state) => state.authentication.loggingIn)
 
   useEffect(() => {
     props.dispatch(authActions.logout())
   }, [])
+
+  useEffect(() => {
+    if (isMounted.current) {
+      if (submitted && !loggedIn) {
+        setValidation(false)
+      } else if (loggedIn) {
+        props.history.push('/')
+      }
+    } else {
+      isMounted.current = true
+    }
+  }, [loggedIn, submitted])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -23,20 +40,15 @@ const Login = (props) => {
 
   function handleSubmit(e) {
     e.preventDefault()
-
     const mail = email
     const pass = password
+    setSubmitted(true)
 
     const { dispatch } = props
     if (mail && pass) {
       console.log(loggedIn)
       dispatch(authActions.login(mail, pass))
       console.log(loggedIn)
-      if (!loggedIn) {
-        setValidation(false)
-      } else {
-        props.history.push('/')
-      }
     }
   }
 
@@ -63,11 +75,14 @@ const Login = (props) => {
                   {!validation ? (
                     <Alert
                       variant="danger"
-                      onClose={() => setValidation(true)}
+                      onClose={() => {
+                        setValidation(true)
+                        setSubmitted(false)
+                      }}
                       dismissible
                     >
                       <Alert.Heading>Auth failed!</Alert.Heading>
-                      <p>Invalid credentials</p>
+                      <p>{error?.error.message}</p>
                     </Alert>
                   ) : (
                     ''
@@ -83,6 +98,11 @@ const Login = (props) => {
                         value={email}
                         onChange={handleChange}
                       />
+                      {submitted && !email && (
+                        <div className="form-text text-danger">
+                          Email is required
+                        </div>
+                      )}
                     </div>
 
                     <div className="form-outline mb-3">
@@ -95,6 +115,11 @@ const Login = (props) => {
                         value={password}
                         onChange={handleChange}
                       />
+                      {submitted && !password && (
+                        <div className="help-block text-danger">
+                          Password is required
+                        </div>
+                      )}
                     </div>
 
                     <div className="d-flex justify-content-between align-items-center">

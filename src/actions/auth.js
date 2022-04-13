@@ -3,7 +3,8 @@ import { authService } from '../services/auth.service'
 export const authActions = {
   login,
   logout,
-  getAll
+  getAll,
+  signup
 }
 
 export const AUTH_ACTIONS = {
@@ -25,12 +26,12 @@ export const AUTH_ACTIONS = {
 function login(username, password) {
   console.log('here in login')
 
-  return (dispatch, props) => {
+  return (dispatch) => {
     dispatch(request({ username }))
 
     authService.login(username, password).then(
-      (user) => {
-        dispatch(success(user.user))
+      (res) => {
+        dispatch(success(res.user))
       },
       (error) => {
         dispatch(failure(error))
@@ -52,27 +53,30 @@ function login(username, password) {
 function signup(payload) {
   console.log('here in login')
 
-  return (dispatch, props) => {
+  return (dispatch) => {
     dispatch(request({ username: payload.username }))
 
     authService.signup(payload).then(
-      (user) => {
-        dispatch(success(user))
+      (res) => {
+        dispatch(success(res.user))
       },
       (error) => {
-        dispatch(failure(error))
+        dispatch(signupFailure(error))
       }
     )
   }
 
   function request(user) {
-    return { type: AUTH_ACTIONS.LOGIN_REQUEST, user }
+    return { type: AUTH_ACTIONS.SIGNUP_REQUEST, user }
   }
   function success(user) {
     return { type: AUTH_ACTIONS.LOGIN_SUCCESS, user }
   }
-  function failure(error) {
+  function loginFailure(error) {
     return { type: AUTH_ACTIONS.LOGIN_FAILURE, error }
+  }
+  function signupFailure(error) {
+    return { type: AUTH_ACTIONS.SIGNUP_FAILURE, error }
   }
 }
 
